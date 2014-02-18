@@ -18,8 +18,8 @@ F=Fsun(1:end,spect);
 Psun=Fsun(1:end,spect); %incident solar power W/cm^2 for am0, am1.5g, amd1.5d
 
 %% Reflection
-ref=Ref;
-%ref=0;
+%ref=Ref;
+ref=0;
 
 %% Variables
 T=300 ; %[Kelvin]
@@ -29,13 +29,13 @@ Vt=kb*T/q;
 
 % K=13.1; %gaas dielectric constant
 %Layer Thicknesses
-t_w = .2e-5; %cm
-t_e = .075e-4 %cm
-t_i = .450E-4; %cm 8.73
+t_w = 20e-7; %cm
+t_e = 75e-7 %cm
+t_i = 400E-7; %cm 8.73
 %i-region thickness [cm]
 %0X: 100e-7; 5X: 133.25e-7; 10X: 205e-7; 20X: 335e-7; 40X: 604e-7;
 %60X:873e-7; 100X: 1411e-7;
-t_b = 1.5e-4; %cm
+t_b = 2.5e-4; %cm
 t_sub = 350e-4; %cm
 
 
@@ -53,9 +53,9 @@ Sb=10000; %base back surface recombination  %%%% VARIABLE!!!!!!!!!!!!!!!
 dataS=[Sw,Se,Sb];
 
 %minority carrier lifetimes
-tauw = 2e-12;%s%2E-13
+tauw = 2e-13;%s%2E-13
 taue = 2.5E-10;%1.4E-11%3.2E-11
-taub = 100e-9; %s3.5E-11%3.5E-11
+taub = 1e-9; %s3.5E-11%3.5E-11
 tauip = 1.1E-15%1.1E-15 %1.3E-15%1.2E-15;
 tauie = 2.6E-11 %2.0E-11%2.1E-11;
 taui=tauip;
@@ -115,8 +115,8 @@ xIn_InAlAs=0.53;%LM to GaAs x=0.52
 
 
 %% built in junction voltage and depletion width
-[Efp]=fermisolve(Egp,Ne_a,me_e,mh_e,1, T);
-[Efn]=fermisolve(Egn,Nb_d,me_b,mh_b,2, T);
+[Efn]=fermisolve(Egp,Ne_a,me_e,mh_e,2, T);
+[Efp]=fermisolve(Egn,Nb_d,me_b,mh_b,1, T);
 
 Vbi=-Efp+Efn;
 
@@ -127,9 +127,9 @@ Wd=wi_e+wi_b;
 
 %% Absorption Coefficients
 a_w=a_In35AlAs; %absorption in windowchanged Aw to a_w
-a_e=0.8*a_InAlAsstaffan; %absorption in emitterchanged An to a_e
-a_i=0.8*a_InAlAsstaffan; %absorption in i-regionGaAs changed Ai to a_i
-a_b=0.8*a_InAlAsstaffan; %absorption in baseGaAs changed Ap to a_b
+a_e=a_InAlAsstaffan; %absorption in emitterchanged An to a_e
+a_i=a_InAlAsstaffan; %absorption in i-regionGaAs changed Ai to a_i
+a_b=a_InAlAsstaffan; %absorption in baseGaAs changed Ap to a_b
 
 %subscript w=window (a in Hovel) e=emitter (g in Hovel), b=base (p Hovel)
 %absorption coefficients taken from Aguinaldo data p=pGaAs, n=nGaAs, and
@@ -162,11 +162,11 @@ t_trans=(Wd+t_i)/1.2E7
 %from Nelson:
 pass=1;
 QE_w=(1-ref).*a_w.*Lw./(a_w.^2.*Lw.^2-1).*( (a_w.*Lw+Sw.*tauw./Lw.*(1-exp(-a_w.*t_w).*cosh(t_w./Lw))-exp(-a_w.*t_w).*sinh(t_w./Lw))./(Sw.*tauw./Lw.*sinh(t_w./Lw)+cosh(t_w./Lw))-a_w.*Lw.*exp(-a_w.*t_w) );
-QE_e = (1-ref) .* exp(-a_w.*t_w) .* ( S./(S.^2 - 1)) .*  (  ((V+a_e.*Le) - exp(-a_e.*(t_e-wi_e)).*(V.*cosh((t_e-wi_e)./Le)+sinh((t_e-wi_e)./Le) ) ) / ( V.*sinh((t_e-wi_e)./Le)+cosh((t_e-wi_e)./Le) ) - (a_e.*Le.*exp(-a_e.*(t_e-wi_e))) );
-%scrrecombQE_scr = (1-ref) .* exp(-a_w.*t_w) .* ( 1-exp(-a_i.*(t_i+Wd)) ) .* exp( -a_e .*(t_e-wi_e) ).*exp(-(t_i+Wd-(-1./a_i.*log(((1)-exp(-a_i.*(t_i+Wd))./(a_i.*(t_i+Wd))))))./1.2E7./tauie).*exp(-((-1./a_e.*log(((1)-exp(-a_e.*(t_i+Wd))./(a_e.*(t_i+Wd)))))*(t_i+Wd)/1.2E7/tauip));
-QE_scr = (1-ref) .* exp(-a_w.*t_w) .* ( 1-exp(-a_i.*(t_i+Wd)) ) .* exp( -a_e .*(t_e-wi_e) );
+QE_e = (1-ref).* exp(-a_w.*t_w) .* ( S./(S.^2 - 1)) .*  (  ((V+a_e.*Le) - exp(-a_e.*(t_e-wi_e)).*(V.*cosh((t_e-wi_e)./Le)+sinh((t_e-wi_e)./Le) ) ) / ( V.*sinh((t_e-wi_e)./Le)+cosh((t_e-wi_e)./Le) ) - (a_e.*Le.*exp(-a_e.*(t_e-wi_e))) );
+QE_scr = (1-ref).* exp(-a_w.*t_w) .* ( 1-exp(-a_i.*(t_i+Wd)) ) .* exp( -a_e .*(t_e-wi_e) );
+%QE_scr = (1-ref) .* exp(-a_w.*t_w) .* ( 1-exp(-a_i.*(t_i+Wd)) ) .* exp( -a_e .*(t_e-wi_e) ).*exp(-(1-(-1/a_i.*log((1-exp(-a_i.*(t_i+Wd)) ./(a_i.*(t_i+Wd))))))./1.2E7./tauie).*exp(-(-1./a_i.*log((1-exp(-a_i.*(t_i+Wd))./(a_i.*(t_i+Wd))))).*(Wd+t_i)./1.2E7./tauip);
 QE_b = (1-ref) .* exp(-a_w.*t_w) .* exp(-a_i.*t_i).* ( E./(E.^2-1) .* exp(-a_b.*(t_e+wi_b)) ) .* ( a_b.*Lb - ( ( J.*(cosh((t_b-wi_b)./Lb)-exp(-a_b.*(t_b-wi_b)) ) + sinh((t_b-wi_b)./Lb) + a_b.*Lb.*exp(-a_b.*(t_b-wi_b)) ) ./ (  J.*sinh((t_b-wi_b)./Lb) + cosh((t_b-wi_b)./Lb) ) ) ); 
-NQEe=exp(-a_w*t_w).*(1-ref).*a_e.*Le./(a_e.^2*Le^2-1).*( ( Se*Le/De+a_e*Le-exp(-a_e*(t_e-wi_e)).*(Se*Le./De*cosh((t_e-wi_e)/Le)+sinh((t_e-wi_e)/Le)))./(Se*Le/De*sinh((t_e-wi_e)/Le)+cosh((t_e-wi_e)/Le))-a_e.*Le.*exp(-a_e*(t_e-wi_e)))+QEw./(Se.*taue./Le.*sinh(t_e./Le)+cosh(t_e./Le)) ;
+NQEe=exp(-a_w*t_w).*(1-ref).*a_e.*Le./(a_e.^2*Le^2-1).*( ( Se*Le/De+a_e*Le-exp(-a_e*(t_e-wi_e)).*(Se*Le./De*cosh((t_e-wi_e)/Le)+sinh((t_e-wi_e)/Le)))./(Se*Le/De*sinh((t_e-wi_e)/Le)+cosh((t_e-wi_e)/Le))-a_e.*Le.*exp(-a_e*(t_e-wi_e)))+QEw./(Se.*taue./Le.*sinh(t_e./Le)+cosh(t_e./Le))*exp(-(Wd+t_i)/1.2E7/tauie) ;
 NQEscr=(1-ref).*exp(-a_w.*t_w).*(1-exp(-a_i.*(Wd+t_i))).*exp(-a_b.*(t_e-wi_e)) .* exp(-t_i/Li)*exp(-0.5*(Wd+t_i)/1.2E7/taui); %contains attenuation from emitter layer
 NQEb=(1-ref).*exp(-a_w.*t_w).*exp(-a_i.*t_i).*a_b*Lb./(a_b.^2*Lb^2-1).*exp(-a_e*t_e-a_b*wi_b).*(a_b*Lb-(Sb*Lb/Db*(cosh((t_b-wi_b)/Lb)-exp(-a_b*(t_b-wi_b)))+sinh((t_b-wi_b)/Lb)+a_b.*Lb.*exp(-a_b*(t_b-wi_b)))./(Sb*Lb/Db*sinh((t_b-wi_b)/Lb)+cosh((t_b-wi_b)/Lb)));
 
